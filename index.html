@@ -44,8 +44,8 @@
         <img src="sneakers.webp" alt="Sneakers" class="rounded mb-4">
         <h4 class="text-lg font-semibold">Cool Sneakers</h4>
         <p class="text-gray-600 mb-2">Stylish and comfortable.</p>
-        <p class="text-blue-600 font-bold mb-2">rupees 70,000</p>
-        <button onclick="addToCart('Cool Sneakers', 70,000)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <p class="text-blue-600 font-bold mb-2">rupees 70000</p>
+        <button onclick="addToCart('Cool Sneakers', 70000)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           Add to Cart
         </button>
       </div>
@@ -62,22 +62,22 @@
         <img src="watch.jpeg" alt="Watch" class="rounded mb-4">
         <h4 class="text-lg font-semibold">Smart Watch</h4>
         <p class="text-gray-600 mb-2">Track your fitness with style.</p>
-        <p class="text-blue-600 font-bold mb-2">rupees 50,000</p>
-        <button onclick="addToCart('Smart Watch', 50,000)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        <p class="text-blue-600 font-bold mb-2">rupees 50000</p>
+        <button onclick="addToCart('Smart Watch', 50000)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
           Add to Cart
         </button>
       </div>
     </div>
+    <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+      <img src="pc.jpeg" alt="pc" class="rounded mb-4">
+      <h4 class="text-lg font-semibold">pc</h4>
+      <p class="text-gray-600 mb-2">excellent graphics with smooth screen.</p>
+      <p class="text-blue-600 font-bold mb-2">rupees 49999</p>
+      <button onclick="addToCart('pc', 49999)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Add to Cart
+      </button>
+    </div>
   </main>
-   <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
-        <img src="pc.jpeg" alt="pc" class="rounded mb-4">
-        <h4 class="text-lg font-semibold">pc</h4>
-        <p class="text-gray-600 mb-2">excellent graphics with smooth screen .</p>
-        <p class="text-blue-600 font-bold mb-2">rupees 49,999</p>
-        <button onclick="addToCart('pc', 49,999)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Add to Cart
-        </button>
-      </div>
 
   <!-- Contact Section -->
   <section id="contact" class="max-w-3xl mx-auto px-6 py-10 text-center">
@@ -122,4 +122,22 @@
       let total = 0;
       cart.forEach(item => {
         total += item.price;
-        const
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - rupees ${item.price}`;
+        cartItems.appendChild(li);
+      });
+      cartTotal.textContent = total.toFixed(2);
+      cartCount.textContent = cart.length;
+      cartCount.classList.toggle('hidden', cart.length === 0);
+    }
+
+    function toggleCart() {
+      cartDrawer.classList.toggle('translate-x-full');
+    }
+
+    function checkout() {
+      alert('Proceeding to checkout...');
+    }
+  </script>
+</body>
+</html>
