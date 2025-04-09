@@ -132,13 +132,40 @@
   </main>
 
   <!-- Contact Section -->
-  <section id="contact" class="max-w-3xl mx-auto px-6 py-10 text-center">
-    <h3 class="text-2xl font-semibold mb-4">Get in Touch</h3>
-    <p class="text-gray-600 mb-4">Questions? Reach out via email or social media.</p>
-    <a href="mailto:support@shopmate.com" class="text-blue-600 hover:underline">
-      support@shopmate.com
-    </a>
-  </section>
+ <!-- Checkout Section -->
+<section id="checkout" class="max-w-3xl mx-auto px-6 py-10 hidden">
+  <h3 class="text-2xl font-semibold mb-4">Checkout</h3>
+  <form id="checkout-form" class="space-y-4 bg-white p-6 rounded-xl shadow">
+    <div>
+      <label class="block mb-1 font-medium">Full Name</label>
+      <input type="text" required class="w-full border px-4 py-2 rounded" id="customer-name" />
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">Email</label>
+      <input type="email" required class="w-full border px-4 py-2 rounded" id="customer-email" />
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">Shipping Address</label>
+      <textarea required class="w-full border px-4 py-2 rounded" id="customer-address"></textarea>
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">Payment Method</label>
+      <select class="w-full border px-4 py-2 rounded" id="payment-method" required>
+        <option value="">Select</option>
+        <option value="card">Credit/Debit Card</option>
+        <option value="cod">Cash on Delivery</option>
+      </select>
+    </div>
+    <div>
+      <h4 class="font-semibold text-lg mb-2">Order Summary</h4>
+      <ul id="checkout-summary" class="text-sm mb-4 space-y-1"></ul>
+      <p class="font-bold">Total: rupees <span id="checkout-total">0.00</span></p>
+    </div>
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
+      Place Order
+    </button>
+  </form>
+</section>
 
   <!-- Cart Drawer -->
   <div id="cart" class="fixed top-0 right-0 w-80 bg-white h-full shadow-xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
@@ -153,104 +180,141 @@
   </div>
 
   <!-- Scripts -->
-  <script>
-    const cart = [];
-    const cartDrawer = document.getElementById('cart');
-    const cartCount = document.getElementById('cart-count');
-    const cartItems = document.getElementById('cart-items');
-    const cartTotal = document.getElementById('cart-total');
-    const searchBox = document.getElementById('search-box');
-    const productGrid = document.getElementById('product-grid');
-    const cartEmptyMsg = document.getElementById('cart-empty-msg');
+ <script>
+  const cart = [];
+  const cartDrawer = document.getElementById('cart');
+  const cartCount = document.getElementById('cart-count');
+  const cartItems = document.getElementById('cart-items');
+  const cartTotal = document.getElementById('cart-total');
+  const searchBox = document.getElementById('search-box');
+  const productGrid = document.getElementById('product-grid');
+  const cartEmptyMsg = document.getElementById('cart-empty-msg');
 
-    function addToCart(name, price) {
-      const existingItem = cart.find(item => item.name === name);
-      if (existingItem) {
-        existingItem.quantity += 1;
+  function addToCart(name, price) {
+    const existingItem = cart.find(item => item.name === name);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ name, price, quantity: 1 });
+    }
+    updateCart();
+  }
+
+  function removeFromCart(name) {
+    const itemIndex = cart.findIndex(item => item.name === name);
+    if (itemIndex !== -1) {
+      if (cart[itemIndex].quantity > 1) {
+        cart[itemIndex].quantity -= 1;
       } else {
-        cart.push({ name, price, quantity: 1 });
+        cart.splice(itemIndex, 1);
       }
-      updateCart();
+    }
+    updateCart();
+  }
+
+  function updateCart() {
+    cartItems.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+      cartEmptyMsg.classList.remove('hidden');
+      cartCount.classList.add('hidden');
+    } else {
+      cartEmptyMsg.classList.add('hidden');
+      cartCount.classList.remove('hidden');
     }
 
-    function removeFromCart(name) {
-      const itemIndex = cart.findIndex(item => item.name === name);
-      if (itemIndex !== -1) {
-        if (cart[itemIndex].quantity > 1) {
-          cart[itemIndex].quantity -= 1;
-        } else {
-          cart.splice(itemIndex, 1);
-        }
-      }
-      updateCart();
-    }
+    cart.forEach(item => {
+      total += item.price * item.quantity;
 
-    function updateCart() {
-      cartItems.innerHTML = '';
-      let total = 0;
+      const li = document.createElement('li');
+      li.className = "flex justify-between items-center";
 
-      if (cart.length === 0) {
-        cartEmptyMsg.classList.remove('hidden');
-        cartCount.classList.add('hidden');
+      const itemDetails = document.createElement('span');
+      itemDetails.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
+      li.appendChild(itemDetails);
+
+      const buttons = document.createElement('div');
+      buttons.className = "flex space-x-2";
+
+      const addButton = document.createElement('button');
+      addButton.textContent = '+';
+      addButton.className = "bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600";
+      addButton.onclick = () => addToCart(item.name, item.price);
+      buttons.appendChild(addButton);
+
+      const removeButton = document.createElement('button');
+      removeButton.textContent = '-';
+      removeButton.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
+      removeButton.onclick = () => removeFromCart(item.name);
+      buttons.appendChild(removeButton);
+
+      li.appendChild(buttons);
+      cartItems.appendChild(li);
+    });
+
+    cartTotal.textContent = total.toFixed(2);
+    cartCount.textContent = cart.length;
+  }
+
+  function toggleCart() {
+    cartDrawer.classList.toggle('translate-x-full');
+  }
+
+  function checkout() {
+    toggleCart(); // Hide cart
+    document.getElementById('checkout').classList.remove('hidden'); // Show checkout form
+
+    const checkoutSummary = document.getElementById('checkout-summary');
+    const checkoutTotal = document.getElementById('checkout-total');
+
+    checkoutSummary.innerHTML = '';
+    let total = 0;
+
+    cart.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
+      checkoutSummary.appendChild(li);
+      total += item.price * item.quantity;
+    });
+
+    checkoutTotal.textContent = total.toFixed(2);
+  }
+
+  function filterProducts() {
+    const searchQuery = searchBox.value.toLowerCase();
+    const productCards = document.querySelectorAll('.product-card');
+
+    productCards.forEach(card => {
+      const productName = card.querySelector('h4').textContent.toLowerCase();
+      if (productName.includes(searchQuery)) {
+        card.classList.remove('hidden');
       } else {
-        cartEmptyMsg.classList.add('hidden');
-        cartCount.classList.remove('hidden');
+        card.classList.add('hidden');
       }
+    });
+  }
 
-      cart.forEach(item => {
-        total += item.price * item.quantity;
+  // Handle Checkout Form Submission
+  document.getElementById('checkout-form')?.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center";
+    const name = document.getElementById('customer-name').value;
+    const email = document.getElementById('customer-email').value;
+    const address = document.getElementById('customer-address').value;
+    const payment = document.getElementById('payment-method').value;
 
-        const itemDetails = document.createElement('span');
-        itemDetails.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
-        li.appendChild(itemDetails);
-
-        const buttons = document.createElement('div');
-        buttons.className = "flex space-x-2";
-
-        const addButton = document.createElement('button');
-        addButton.textContent = '+';
-        addButton.className = "bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600";
-        addButton.onclick = () => addToCart(item.name, item.price);
-        buttons.appendChild(addButton);
-
-        const removeButton = document.createElement('button');
-        removeButton.textContent = '-';
-        removeButton.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
-        removeButton.onclick = () => removeFromCart(item.name);
-        buttons.appendChild(removeButton);
-
-        li.appendChild(buttons);
-        cartItems.appendChild(li);
-      });
-
-      cartTotal.textContent = total.toFixed(2);
-      cartCount.textContent = cart.length;
+    if (cart.length === 0) {
+      alert("Your cart is empty!");
+      return;
     }
 
-    function toggleCart() {
-      cartDrawer.classList.toggle('translate-x-full');
-    }
-
-    function checkout() {
-      alert('Proceeding to checkout...');
-    }
-
-    function filterProducts() {
-      const searchQuery = searchBox.value.toLowerCase();
-      const productCards = document.querySelectorAll('.product-card');
-      
-      productCards.forEach(card => {
-        const productName = card.querySelector('h4').textContent.toLowerCase();
-        if (productName.includes(searchQuery)) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    }
-  </script>
+    alert(`Thank you, ${name}! Your order has been placed.\nDetails sent to ${email}.`);
+    cart.length = 0; // Clear cart
+    updateCart(); // Refresh cart UI
+    document.getElementById('checkout').classList.add('hidden'); // Hide checkout
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+  });
+</script>
 </body>
 </html>
