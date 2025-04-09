@@ -89,55 +89,92 @@
   </section>
 
   <!-- Cart Drawer -->
-  <div id="cart" class="fixed top-0 right-0 w-80 bg-white h-full shadow-xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
-    <div class="p-6">
-      <h4 class="text-xl font-bold mb-4">Your Cart</h4>
-      <ul id="cart-items" class="mb-4 text-sm space-y-2"></ul>
-      <p class="text-lg font-semibold mb-4">Total: $<span id="cart-total">0.00</span></p>
-      <button onclick="checkout()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Checkout</button>
-      <button onclick="toggleCart()" class="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Close</button>
-    </div>
+  <!-- Cart Drawer -->
+<div id="cart" class="fixed top-0 right-0 w-80 bg-white h-full shadow-xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+  <div class="p-6">
+    <h4 class="text-xl font-bold mb-4">Your Cart</h4>
+    <ul id="cart-items" class="mb-4 text-sm space-y-2"></ul>
+    <p class="text-lg font-semibold mb-4">Total: rupees <span id="cart-total">0.00</span></p>
+    <button onclick="checkout()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Checkout</button>
+    <button onclick="toggleCart()" class="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Close</button>
   </div>
+</div>
 
-  <!-- Footer -->
-  <footer class="bg-white text-center py-6 border-t mt-10 text-sm text-gray-500">
-    &copy; 2025 ShopMate. All rights reserved.
-  </footer>
+<!-- Scripts -->
+<script>
+  const cart = [];
+  const cartDrawer = document.getElementById('cart');
+  const cartCount = document.getElementById('cart-count');
+  const cartItems = document.getElementById('cart-items');
+  const cartTotal = document.getElementById('cart-total');
 
-  <!-- Scripts -->
-  <script>
-    const cart = [];
-    const cartDrawer = document.getElementById('cart');
-    const cartCount = document.getElementById('cart-count');
-    const cartItems = document.getElementById('cart-items');
-    const cartTotal = document.getElementById('cart-total');
-
-    function addToCart(name, price) {
-      cart.push({ name, price });
-      updateCart();
+  function addToCart(name, price) {
+    const existingItem = cart.find(item => item.name === name);
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ name, price, quantity: 1 });
     }
+    updateCart();
+  }
 
-    function updateCart() {
-      cartItems.innerHTML = '';
-      let total = 0;
-      cart.forEach(item => {
-        total += item.price;
-        const li = document.createElement('li');
-        li.textContent = `${item.name} - rupees ${item.price}`;
-        cartItems.appendChild(li);
-      });
-      cartTotal.textContent = total.toFixed(2);
-      cartCount.textContent = cart.length;
-      cartCount.classList.toggle('hidden', cart.length === 0);
+  function removeFromCart(name) {
+    const itemIndex = cart.findIndex(item => item.name === name);
+    if (itemIndex !== -1) {
+      if (cart[itemIndex].quantity > 1) {
+        cart[itemIndex].quantity -= 1;
+      } else {
+        cart.splice(itemIndex, 1);
+      }
     }
+    updateCart();
+  }
 
-    function toggleCart() {
-      cartDrawer.classList.toggle('translate-x-full');
-    }
+  function updateCart() {
+    cartItems.innerHTML = '';
+    let total = 0;
 
-    function checkout() {
-      alert('Proceeding to checkout...');
-    }
-  </script>
+    cart.forEach(item => {
+      total += item.price * item.quantity;
+
+      const li = document.createElement('li');
+      li.className = "flex justify-between items-center";
+
+      const itemDetails = document.createElement('span');
+      itemDetails.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
+      li.appendChild(itemDetails);
+
+      const buttons = document.createElement('div');
+      buttons.className = "flex space-x-2";
+
+      const addButton = document.createElement('button');
+      addButton.textContent = '+';
+      addButton.className = "bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600";
+      addButton.onclick = () => addToCart(item.name, item.price);
+      buttons.appendChild(addButton);
+
+      const removeButton = document.createElement('button');
+      removeButton.textContent = '-';
+      removeButton.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
+      removeButton.onclick = () => removeFromCart(item.name);
+      buttons.appendChild(removeButton);
+
+      li.appendChild(buttons);
+      cartItems.appendChild(li);
+    });
+
+    cartTotal.textContent = total.toFixed(2);
+    cartCount.textContent = cart.length;
+    cartCount.classList.toggle('hidden', cart.length === 0);
+  }
+
+  function toggleCart() {
+    cartDrawer.classList.toggle('translate-x-full');
+  }
+
+  function checkout() {
+    alert('Proceeding to checkout...');
+  }
+</script>
 </body>
 </html>
