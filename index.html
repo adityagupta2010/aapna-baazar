@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> AAPNA BAAZAR | Your Favorite Online Store</title>
+  <title>AAPNA BAAZAR | Your Favorite Online Store</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html {
       scroll-behavior: smooth;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
   </style>
 </head>
@@ -17,15 +21,24 @@
   <header class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-blue-600">AAPNA BAAZAR</h1>
-      <nav class="space-x-4">
-        <a href="#home" class="text-gray-700 hover:text-blue-600">Home</a>
-        <a href="#products" class="text-gray-700 hover:text-blue-600">Products</a>
-        <a href="#contact" class="text-gray-700 hover:text-blue-600">Contact</a>
-        <button onclick="toggleCart()" class="relative">
-          🛒
-          <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1 hidden">0</span>
-        </button>
-      </nav>
+      <div class="flex space-x-4 items-center">
+        <input 
+          id="search-box" 
+          type="text" 
+          class="border rounded px-4 py-2 text-sm w-64" 
+          placeholder="Search for products..." 
+          oninput="filterProducts()" 
+        />
+        <nav class="space-x-4">
+          <a href="#home" class="text-gray-700 hover:text-blue-600">Home</a>
+          <a href="#products" class="text-gray-700 hover:text-blue-600">Products</a>
+          <a href="#contact" class="text-gray-700 hover:text-blue-600">Contact</a>
+          <button onclick="toggleCart()" class="relative">
+            🛒
+            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1 hidden">0</span>
+          </button>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -38,9 +51,9 @@
   <!-- Product Grid -->
   <main id="products" class="max-w-7xl mx-auto px-6 py-10">
     <h3 class="text-2xl font-semibold mb-6">Featured Products</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       <!-- Product Card Template -->
-      <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+      <div class="bg-white p-4 rounded-xl shadow product-card transition transform">
         <img src="sneakers.webp" alt="Sneakers" class="rounded mb-4">
         <h4 class="text-lg font-semibold">Cool Sneakers</h4>
         <p class="text-gray-600 mb-2">Stylish and comfortable.</p>
@@ -49,7 +62,7 @@
           Add to Cart
         </button>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+      <div class="bg-white p-4 rounded-xl shadow product-card transition transform">
         <img src="headphones.webp" alt="Headphones" class="rounded mb-4">
         <h4 class="text-lg font-semibold">Wireless Headphones</h4>
         <p class="text-gray-600 mb-2">Crisp sound, long battery.</p>
@@ -58,7 +71,7 @@
           Add to Cart
         </button>
       </div>
-      <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
+      <div class="bg-white p-4 rounded-xl shadow product-card transition transform">
         <img src="watch.jpeg" alt="Watch" class="rounded mb-4">
         <h4 class="text-lg font-semibold">Smart Watch</h4>
         <p class="text-gray-600 mb-2">Track your fitness with style.</p>
@@ -67,15 +80,15 @@
           Add to Cart
         </button>
       </div>
-    </div>
-    <div class="bg-white p-4 rounded-xl shadow hover:shadow-lg transition">
-      <img src="pc.jpeg" alt="pc" class="rounded mb-4">
-      <h4 class="text-lg font-semibold">pc</h4>
-      <p class="text-gray-600 mb-2">excellent graphics with smooth screen.</p>
-      <p class="text-blue-600 font-bold mb-2">rupees 49999</p>
-      <button onclick="addToCart('pc', 49999)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Add to Cart
-      </button>
+      <div class="bg-white p-4 rounded-xl shadow product-card transition transform">
+        <img src="pc.jpeg" alt="PC" class="rounded mb-4">
+        <h4 class="text-lg font-semibold">PC</h4>
+        <p class="text-gray-600 mb-2">Excellent graphics with smooth screen.</p>
+        <p class="text-blue-600 font-bold mb-2">rupees 49999</p>
+        <button onclick="addToCart('PC', 49999)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Add to Cart
+        </button>
+      </div>
     </div>
   </main>
 
@@ -89,92 +102,115 @@
   </section>
 
   <!-- Cart Drawer -->
-  <!-- Cart Drawer -->
-<div id="cart" class="fixed top-0 right-0 w-80 bg-white h-full shadow-xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
-  <div class="p-6">
-    <h4 class="text-xl font-bold mb-4">Your Cart</h4>
-    <ul id="cart-items" class="mb-4 text-sm space-y-2"></ul>
-    <p class="text-lg font-semibold mb-4">Total: rupees <span id="cart-total">0.00</span></p>
-    <button onclick="checkout()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Checkout</button>
-    <button onclick="toggleCart()" class="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Close</button>
+  <div id="cart" class="fixed top-0 right-0 w-80 bg-white h-full shadow-xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
+    <div class="p-6">
+      <h4 class="text-xl font-bold mb-4">Your Cart</h4>
+      <ul id="cart-items" class="mb-4 text-sm space-y-2"></ul>
+      <p id="cart-empty-msg" class="text-gray-500 text-center hidden">Your cart is empty.</p>
+      <p class="text-lg font-semibold mb-4">Total: rupees <span id="cart-total">0.00</span></p>
+      <button onclick="checkout()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Checkout</button>
+      <button onclick="toggleCart()" class="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300">Close</button>
+    </div>
   </div>
-</div>
 
-<!-- Scripts -->
-<script>
-  const cart = [];
-  const cartDrawer = document.getElementById('cart');
-  const cartCount = document.getElementById('cart-count');
-  const cartItems = document.getElementById('cart-items');
-  const cartTotal = document.getElementById('cart-total');
+  <!-- Scripts -->
+  <script>
+    const cart = [];
+    const cartDrawer = document.getElementById('cart');
+    const cartCount = document.getElementById('cart-count');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const searchBox = document.getElementById('search-box');
+    const productGrid = document.getElementById('product-grid');
+    const cartEmptyMsg = document.getElementById('cart-empty-msg');
 
-  function addToCart(name, price) {
-    const existingItem = cart.find(item => item.name === name);
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({ name, price, quantity: 1 });
-    }
-    updateCart();
-  }
-
-  function removeFromCart(name) {
-    const itemIndex = cart.findIndex(item => item.name === name);
-    if (itemIndex !== -1) {
-      if (cart[itemIndex].quantity > 1) {
-        cart[itemIndex].quantity -= 1;
+    function addToCart(name, price) {
+      const existingItem = cart.find(item => item.name === name);
+      if (existingItem) {
+        existingItem.quantity += 1;
       } else {
-        cart.splice(itemIndex, 1);
+        cart.push({ name, price, quantity: 1 });
       }
+      updateCart();
     }
-    updateCart();
-  }
 
-  function updateCart() {
-    cartItems.innerHTML = '';
-    let total = 0;
+    function removeFromCart(name) {
+      const itemIndex = cart.findIndex(item => item.name === name);
+      if (itemIndex !== -1) {
+        if (cart[itemIndex].quantity > 1) {
+          cart[itemIndex].quantity -= 1;
+        } else {
+          cart.splice(itemIndex, 1);
+        }
+      }
+      updateCart();
+    }
 
-    cart.forEach(item => {
-      total += item.price * item.quantity;
+    function updateCart() {
+      cartItems.innerHTML = '';
+      let total = 0;
 
-      const li = document.createElement('li');
-      li.className = "flex justify-between items-center";
+      if (cart.length === 0) {
+        cartEmptyMsg.classList.remove('hidden');
+      } else {
+        cartEmptyMsg.classList.add('hidden');
+      }
 
-      const itemDetails = document.createElement('span');
-      itemDetails.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
-      li.appendChild(itemDetails);
+      cart.forEach(item => {
+        total += item.price * item.quantity;
 
-      const buttons = document.createElement('div');
-      buttons.className = "flex space-x-2";
+        const li = document.createElement('li');
+        li.className = "flex justify-between items-center";
 
-      const addButton = document.createElement('button');
-      addButton.textContent = '+';
-      addButton.className = "bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600";
-      addButton.onclick = () => addToCart(item.name, item.price);
-      buttons.appendChild(addButton);
+        const itemDetails = document.createElement('span');
+        itemDetails.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
+        li.appendChild(itemDetails);
 
-      const removeButton = document.createElement('button');
-      removeButton.textContent = '-';
-      removeButton.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
-      removeButton.onclick = () => removeFromCart(item.name);
-      buttons.appendChild(removeButton);
+        const buttons = document.createElement('div');
+        buttons.className = "flex space-x-2";
 
-      li.appendChild(buttons);
-      cartItems.appendChild(li);
-    });
+        const addButton = document.createElement('button');
+        addButton.textContent = '+';
+        addButton.className = "bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600";
+        addButton.onclick = () => addToCart(item.name, item.price);
+        buttons.appendChild(addButton);
 
-    cartTotal.textContent = total.toFixed(2);
-    cartCount.textContent = cart.length;
-    cartCount.classList.toggle('hidden', cart.length === 0);
-  }
+        const removeButton = document.createElement('button');
+        removeButton.textContent = '-';
+        removeButton.className = "bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600";
+        removeButton.onclick = () => removeFromCart(item.name);
+        buttons.appendChild(removeButton);
 
-  function toggleCart() {
-    cartDrawer.classList.toggle('translate-x-full');
-  }
+        li.appendChild(buttons);
+        cartItems.appendChild(li);
+      });
 
-  function checkout() {
-    alert('Proceeding to checkout...');
-  }
-</script>
+      cartTotal.textContent = total.toFixed(2);
+      cartCount.textContent = cart.length;
+      cartCount.classList.toggle('hidden', cart.length === 0);
+    }
+
+    function toggleCart() {
+      cartDrawer.classList.toggle('translate-x-full');
+    }
+
+    function checkout() {
+      alert('Proceeding to checkout...');
+    }
+
+    function filterProducts() {
+      const searchQuery = searchBox.value.toLowerCase();
+      const productCards = document.querySelectorAll('.product-card');
+      
+      productCards.forEach(card => {
+        const productName = card.querySelector('h4').textContent.toLowerCase();
+        if (productName.includes(searchQuery)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+  </script>
 </body>
 </html>
