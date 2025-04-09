@@ -1,3 +1,4 @@
+<!-- Updated Code -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,9 @@
     .product-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -152,8 +156,10 @@
 
       if (cart.length === 0) {
         cartEmptyMsg.classList.remove('hidden');
+        cartCount.classList.add('hidden');
       } else {
         cartEmptyMsg.classList.add('hidden');
+        cartCount.classList.remove('hidden');
       }
 
       cart.forEach(item => {
@@ -163,7 +169,7 @@
         li.className = "flex justify-between items-center";
 
         const itemDetails = document.createElement('span');
-        itemDetails.textContent = ${item.name} - rupees ${item.price} x ${item.quantity};
+        itemDetails.textContent = `${item.name} - rupees ${item.price} x ${item.quantity}`;
         li.appendChild(itemDetails);
 
         const buttons = document.createElement('div');
@@ -187,7 +193,6 @@
 
       cartTotal.textContent = total.toFixed(2);
       cartCount.textContent = cart.length;
-      cartCount.classList.toggle('hidden', cart.length === 0);
     }
 
     function toggleCart() {
